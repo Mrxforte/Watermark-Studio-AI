@@ -46,6 +46,26 @@ object SampleVideoGenerator {
         }
     }
 
+    fun createSampleFrameBitmap(timeSeconds: Float = 0f, targetWidth: Int = WIDTH, targetHeight: Int = HEIGHT): Bitmap {
+        val bitmap = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val bgPaint = Paint().apply { isAntiAlias = true }
+        val shapePaint = Paint().apply { isAntiAlias = true; style = Paint.Style.FILL }
+        val textPaint = Paint().apply {
+            color = Color.WHITE
+            textSize = 38f * (targetWidth.toFloat() / WIDTH)
+            isAntiAlias = true
+            isFakeBoldText = true
+        }
+        val platePaint = Paint().apply {
+            color = 0x9917191E.toInt()
+            style = Paint.Style.FILL
+            isAntiAlias = true
+        }
+        drawDynamicScene(canvas, timeSeconds, bgPaint, shapePaint, textPaint, platePaint)
+        return bitmap
+    }
+
     private fun generateMp4File(outputFile: File) {
         if (outputFile.exists()) outputFile.delete()
 

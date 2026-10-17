@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,15 +22,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Animation
-import androidx.compose.material.icons.filled.GridOn
-import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TextFields
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -50,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.nativeCanvas
@@ -65,9 +60,11 @@ import com.example.domain.model.AnimationType
 import com.example.domain.model.NormalizedPoint
 import com.example.domain.model.PositionPreset
 import com.example.feature.StudioViewModel
+import com.example.feature.components.GlassCard
+import com.example.feature.components.NavyPillButton
+import com.example.feature.components.SegmentedPillSwitcher
+import com.example.ui.theme.GlassBorderBrush
 import com.example.ui.theme.StudioBorder
-import com.example.ui.theme.StudioCard
-import com.example.ui.theme.StudioElevated
 import com.example.ui.theme.StudioPrimary
 import com.example.ui.theme.StudioSecondary
 import com.example.ui.theme.StudioTextPrimary
@@ -77,6 +74,7 @@ import com.example.ui.theme.StudioTextSecondary
 fun CreateWatermarkScreen(
     viewModel: StudioViewModel,
     onNavigateToExport: () -> Unit,
+    onNavigateBack: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val currentVideo by viewModel.currentVideo.collectAsState()
@@ -92,41 +90,49 @@ fun CreateWatermarkScreen(
                 .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = StudioCard),
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier.fillMaxWidth()
+            GlassCard(
+                modifier = Modifier.fillMaxWidth(),
+                cornerRadius = 28.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier.padding(26.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.TextFields,
-                        contentDescription = "No Video",
-                        tint = StudioSecondary,
-                        modifier = Modifier.size(54.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF0F2644))
+                            .border(1.5.dp, Color(0xFF00E5FF), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.TextFields,
+                            contentDescription = "No Video",
+                            tint = Color(0xFF00E5FF),
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Watermark Creator",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = StudioTextPrimary
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Please import a video from Home or load the sample video to begin designing custom watermarks.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = StudioTextSecondary
+                        color = StudioTextSecondary,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(20.dp))
-                    Button(
+                    NavyPillButton(
+                        text = "Load Sample Video",
                         onClick = { viewModel.loadSampleVideo() },
-                        colors = ButtonDefaults.buttonColors(containerColor = StudioSecondary),
                         modifier = Modifier.testTag("load_sample_creator_btn")
-                    ) {
-                        Text("Load Sample Video", color = Color.Black, fontWeight = FontWeight.Bold)
-                    }
+                    )
                 }
             }
         }
@@ -137,17 +143,67 @@ fun CreateWatermarkScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(bottom = 80.dp)
+            .padding(bottom = 95.dp)
     ) {
-        // Video Preview with Live Watermark Overlay & Drag Gestures
+        // Top Bar: < Back, Centered Title, Right Settings
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .border(1.dp, Color(0xFFE2E8F0), CircleShape)
+                    .clickable { onNavigateBack() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = StudioTextPrimary,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+
+            Text(
+                text = "Watermark Designer",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = StudioTextPrimary,
+                letterSpacing = 0.5.sp
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .border(1.dp, Color(0xFFE2E8F0), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
+                    tint = StudioPrimary,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+
+        // Live Floating 3D Frosted Glass Video Preview Canvas
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
                 .aspectRatio(currentVideo?.aspectRatio ?: (16f / 9f))
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(26.dp))
                 .background(Color.Black)
-                .border(1.dp, StudioBorder, RoundedCornerShape(16.dp))
+                .border(1.5.dp, GlassBorderBrush, RoundedCornerShape(26.dp))
         ) {
             Canvas(
                 modifier = Modifier
@@ -172,7 +228,6 @@ fun CreateWatermarkScreen(
                 val cw = size.width
                 val ch = size.height
 
-                // Draw base frame
                 if (frameBitmap != null) {
                     drawImage(
                         image = frameBitmap!!.asImageBitmap(),
@@ -181,7 +236,7 @@ fun CreateWatermarkScreen(
                     )
                 }
 
-                // Draw Repeat Grid Pattern if enabled
+                // Repeat Grid Pattern
                 val rg = watermarkDesign.repeatGrid
                 if (rg.enabled) {
                     drawContext.canvas.nativeCanvas.apply {
@@ -208,7 +263,7 @@ fun CreateWatermarkScreen(
                     }
                 }
 
-                // Draw Text Layer
+                // Text Layer
                 val tc = watermarkDesign.textConfig
                 if (tc.text.isNotBlank()) {
                     val px = tc.position.x * cw
@@ -229,7 +284,6 @@ fun CreateWatermarkScreen(
                         val textWidth = textPaint.measureText(tc.text)
                         val metrics = textPaint.fontMetrics
 
-                        // Optional plate
                         if (tc.hasBackgroundPlate) {
                             val platePaint = android.graphics.Paint().apply {
                                 color = tc.plateColor.toInt()
@@ -249,7 +303,6 @@ fun CreateWatermarkScreen(
                             )
                         }
 
-                        // Outline
                         if (tc.hasOutline) {
                             val strokePaint = android.graphics.Paint(textPaint).apply {
                                 style = android.graphics.Paint.Style.STROKE
@@ -266,206 +319,177 @@ fun CreateWatermarkScreen(
                 }
             }
 
-            // Drag hint badge
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .padding(8.dp)
-                    .background(Color(0xBB101114), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(12.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xF0FFFFFF))
+                    .border(1.dp, Color(0x400284C7), RoundedCornerShape(12.dp))
+                    .padding(horizontal = 10.dp, vertical = 6.dp)
             ) {
                 Text(
-                    text = "Drag watermark directly on video to position",
-                    fontSize = 10.sp,
-                    color = StudioSecondary
+                    text = "Touch and drag to position watermark directly",
+                    fontSize = 11.sp,
+                    color = StudioPrimary,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }
 
-        // Feature Selector Tabs
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val tabs = listOf("Text Layer", "Positions", "Repeat Grid", "Animations")
-            for (idx in tabs.indices) {
-                val isSelected = activeTab == idx
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (isSelected) StudioPrimary.copy(alpha = 0.2f) else StudioElevated
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    border = androidx.compose.foundation.BorderStroke(
-                        width = 1.dp,
-                        color = if (isSelected) StudioPrimary else Color.Transparent
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { activeTab = idx }
-                        .testTag("tab_$idx")
-                ) {
-                    Box(modifier = Modifier.padding(vertical = 10.dp), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = tabs[idx],
-                            fontSize = 11.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isSelected) StudioPrimary else StudioTextSecondary
-                        )
-                    }
-                }
-            }
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // Segmented Pill Switcher (Text | Positions | Grid | Motion)
+        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+            SegmentedPillSwitcher(
+                options = listOf("Text", "Positions", "Grid", "Motion"),
+                selectedIndex = activeTab,
+                onSelectIndex = { activeTab = it }
+            )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         // TAB 0: Text Layer Customization
         if (activeTab == 0) {
             val tc = watermarkDesign.textConfig
-            Card(
-                colors = CardDefaults.cardColors(containerColor = StudioCard),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Text Content & Styling", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.height(10.dp))
+            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                GlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 24.dp
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("Text Content & Typography", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = StudioTextPrimary)
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
-                        value = tc.text,
-                        onValueChange = { newText ->
-                            viewModel.updateWatermarkDesign(
-                                watermarkDesign.copy(textConfig = tc.copy(text = newText))
-                            )
-                        },
-                        label = { Text("Watermark Text") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = StudioPrimary,
-                            unfocusedBorderColor = StudioBorder,
-                            focusedContainerColor = StudioElevated,
-                            unfocusedContainerColor = StudioElevated
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("watermark_text_input")
-                    )
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // Font Size Slider
-                    Text("Font Size: ${tc.fontSizeSp.toInt()} sp", style = MaterialTheme.typography.bodySmall)
-                    Slider(
-                        value = tc.fontSizeSp,
-                        onValueChange = {
-                            viewModel.updateWatermarkDesign(
-                                watermarkDesign.copy(textConfig = tc.copy(fontSizeSp = it))
-                            )
-                        },
-                        valueRange = 12f..60f,
-                        colors = SliderDefaults.colors(thumbColor = StudioPrimary, activeTrackColor = StudioPrimary)
-                    )
-
-                    // Opacity Slider
-                    Text("Opacity: ${(tc.opacity * 100).toInt()}%", style = MaterialTheme.typography.bodySmall)
-                    Slider(
-                        value = tc.opacity,
-                        onValueChange = {
-                            viewModel.updateWatermarkDesign(
-                                watermarkDesign.copy(textConfig = tc.copy(opacity = it))
-                            )
-                        },
-                        valueRange = 0.1f..1.0f,
-                        colors = SliderDefaults.colors(thumbColor = StudioSecondary, activeTrackColor = StudioSecondary)
-                    )
-
-                    // Rotation Slider
-                    Text("Rotation: ${tc.rotationDeg.toInt()}°", style = MaterialTheme.typography.bodySmall)
-                    Slider(
-                        value = tc.rotationDeg,
-                        onValueChange = {
-                            viewModel.updateWatermarkDesign(
-                                watermarkDesign.copy(textConfig = tc.copy(rotationDeg = it))
-                            )
-                        },
-                        valueRange = -90f..90f,
-                        colors = SliderDefaults.colors(thumbColor = StudioPrimary, activeTrackColor = StudioPrimary)
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Color swatches
-                    Text("Text Color", style = MaterialTheme.typography.bodySmall)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        val colors = listOf(
-                            0xFFFFFFFF to "White",
-                            0xFF5EEAD4 to "Cyan",
-                            0xFFA78BFA to "Violet",
-                            0xFFFBBF24 to "Gold",
-                            0xFFFF6B75 to "Coral"
+                        OutlinedTextField(
+                            value = tc.text,
+                            onValueChange = { newText ->
+                                viewModel.updateWatermarkDesign(
+                                    watermarkDesign.copy(textConfig = tc.copy(text = newText))
+                                )
+                            },
+                            label = { Text("Watermark Text") },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = StudioPrimary,
+                                unfocusedBorderColor = StudioBorder,
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color(0xFFF8FAFC)
+                            ),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("watermark_text_input")
                         )
-                        for ((cVal, label) in colors) {
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .background(Color(cVal), CircleShape)
-                                    .border(
-                                        width = if (tc.textColor == cVal) 2.5.dp else 1.dp,
-                                        color = if (tc.textColor == cVal) Color.White else StudioBorder,
-                                        shape = CircleShape
-                                    )
-                                    .clickable {
-                                        viewModel.updateWatermarkDesign(
-                                            watermarkDesign.copy(textConfig = tc.copy(textColor = cVal))
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Text("Font Size: ${tc.fontSizeSp.toInt()} sp", fontSize = 11.sp, color = StudioTextSecondary)
+                        Slider(
+                            value = tc.fontSizeSp,
+                            onValueChange = {
+                                viewModel.updateWatermarkDesign(
+                                    watermarkDesign.copy(textConfig = tc.copy(fontSizeSp = it))
+                                )
+                            },
+                            valueRange = 12f..60f,
+                            colors = SliderDefaults.colors(thumbColor = StudioPrimary, activeTrackColor = StudioPrimary, inactiveTrackColor = Color(0xFFE2E8F0))
+                        )
+
+                        Text("Opacity: ${(tc.opacity * 100).toInt()}%", fontSize = 11.sp, color = StudioTextSecondary)
+                        Slider(
+                            value = tc.opacity,
+                            onValueChange = {
+                                viewModel.updateWatermarkDesign(
+                                    watermarkDesign.copy(textConfig = tc.copy(opacity = it))
+                                )
+                            },
+                            valueRange = 0.1f..1.0f,
+                            colors = SliderDefaults.colors(thumbColor = Color(0xFF38BDF8), activeTrackColor = Color(0xFF38BDF8), inactiveTrackColor = Color(0xFFE2E8F0))
+                        )
+
+                        Text("Rotation: ${tc.rotationDeg.toInt()}°", fontSize = 11.sp, color = StudioTextSecondary)
+                        Slider(
+                            value = tc.rotationDeg,
+                            onValueChange = {
+                                viewModel.updateWatermarkDesign(
+                                    watermarkDesign.copy(textConfig = tc.copy(rotationDeg = it))
+                                )
+                            },
+                            valueRange = -90f..90f,
+                            colors = SliderDefaults.colors(thumbColor = StudioPrimary, activeTrackColor = StudioPrimary, inactiveTrackColor = Color(0xFFE2E8F0))
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text("Palette", fontSize = 11.sp, color = Color(0xFF94A3B8))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            val colors = listOf(
+                                0xFFFFFFFF to "White",
+                                0xFF00E5FF to "Cyan",
+                                0xFF38BDF8 to "Blue",
+                                0xFFFFB74D to "Gold",
+                                0xFFFF5252 to "Coral"
+                            )
+                            for ((cVal, label) in colors) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(34.dp)
+                                        .background(Color(cVal), CircleShape)
+                                        .border(
+                                            width = if (tc.textColor == cVal) 2.5.dp else 1.dp,
+                                            color = if (tc.textColor == cVal) Color.White else StudioBorder,
+                                            shape = CircleShape
                                         )
-                                    }
+                                        .clickable {
+                                            viewModel.updateWatermarkDesign(
+                                                watermarkDesign.copy(textConfig = tc.copy(textColor = cVal))
+                                            )
+                                        }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Background Plate", style = MaterialTheme.typography.bodySmall, color = StudioTextPrimary)
+                            Switch(
+                                checked = tc.hasBackgroundPlate,
+                                onCheckedChange = {
+                                    viewModel.updateWatermarkDesign(
+                                        watermarkDesign.copy(textConfig = tc.copy(hasBackgroundPlate = it))
+                                    )
+                                },
+                                colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF00E5FF))
                             )
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Background Plate Toggle
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Dark Background Plate", style = MaterialTheme.typography.bodySmall)
-                        Switch(
-                            checked = tc.hasBackgroundPlate,
-                            onCheckedChange = {
-                                viewModel.updateWatermarkDesign(
-                                    watermarkDesign.copy(textConfig = tc.copy(hasBackgroundPlate = it))
-                                )
-                            },
-                            colors = SwitchDefaults.colors(checkedThumbColor = StudioSecondary)
-                        )
-                    }
-
-                    // Stroke Outline Toggle
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("High-Contrast Outline Stroke", style = MaterialTheme.typography.bodySmall)
-                        Switch(
-                            checked = tc.hasOutline,
-                            onCheckedChange = {
-                                viewModel.updateWatermarkDesign(
-                                    watermarkDesign.copy(textConfig = tc.copy(hasOutline = it))
-                                )
-                            },
-                            colors = SwitchDefaults.colors(checkedThumbColor = StudioPrimary)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("High-Contrast Outline", style = MaterialTheme.typography.bodySmall, color = StudioTextPrimary)
+                            Switch(
+                                checked = tc.hasOutline,
+                                onCheckedChange = {
+                                    viewModel.updateWatermarkDesign(
+                                        watermarkDesign.copy(textConfig = tc.copy(hasOutline = it))
+                                    )
+                                },
+                                colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF38BDF8))
+                            )
+                        }
                     }
                 }
             }
@@ -473,43 +497,40 @@ fun CreateWatermarkScreen(
 
         // TAB 1: Position Presets
         if (activeTab == 1) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = StudioCard),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Position Presets & Anchors", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.height(10.dp))
+            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                GlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 24.dp
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("Position Anchors", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = StudioTextPrimary)
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    val presets = PositionPreset.values()
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        for (p in presets) {
-                            Card(
-                                colors = CardDefaults.cardColors(containerColor = StudioElevated),
-                                shape = RoundedCornerShape(10.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        viewModel.updateWatermarkDesign(
-                                            watermarkDesign.copy(
-                                                textConfig = watermarkDesign.textConfig.copy(
-                                                    position = NormalizedPoint(p.normX, p.normY)
+                        val presets = PositionPreset.values()
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            for (p in presets) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(Color(0xFFF1F5F9))
+                                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(14.dp))
+                                        .clickable {
+                                            viewModel.updateWatermarkDesign(
+                                                watermarkDesign.copy(
+                                                    textConfig = watermarkDesign.textConfig.copy(
+                                                        position = NormalizedPoint(p.normX, p.normY)
+                                                    )
                                                 )
                                             )
-                                        )
-                                    }
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 12.dp)
                                 ) {
                                     Text(
                                         text = p.title,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White
+                                        color = StudioTextPrimary,
+                                        fontWeight = FontWeight.Medium
                                     )
                                 }
                             }
@@ -522,73 +543,74 @@ fun CreateWatermarkScreen(
         // TAB 2: Repeat Grid Pattern
         if (activeTab == 2) {
             val rg = watermarkDesign.repeatGrid
-            Card(
-                colors = CardDefaults.cardColors(containerColor = StudioCard),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Tiled Diagonal Grid Matrix", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        Switch(
-                            checked = rg.enabled,
-                            onCheckedChange = {
-                                viewModel.updateWatermarkDesign(
-                                    watermarkDesign.copy(repeatGrid = rg.copy(enabled = it))
-                                )
-                            },
-                            colors = SwitchDefaults.colors(checkedThumbColor = StudioSecondary)
-                        )
-                    }
+            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                GlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 24.dp
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Diagonal Grid Matrix", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = StudioTextPrimary)
+                            Switch(
+                                checked = rg.enabled,
+                                onCheckedChange = {
+                                    viewModel.updateWatermarkDesign(
+                                        watermarkDesign.copy(repeatGrid = rg.copy(enabled = it))
+                                    )
+                                },
+                                colors = SwitchDefaults.colors(checkedThumbColor = StudioPrimary)
+                            )
+                        }
 
-                    if (rg.enabled) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        OutlinedTextField(
-                            value = rg.text,
-                            onValueChange = {
-                                viewModel.updateWatermarkDesign(
-                                    watermarkDesign.copy(repeatGrid = rg.copy(text = it))
-                                )
-                            },
-                            label = { Text("Grid Text") },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = StudioSecondary,
-                                focusedContainerColor = StudioElevated,
-                                unfocusedContainerColor = StudioElevated
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        if (rg.enabled) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            OutlinedTextField(
+                                value = rg.text,
+                                onValueChange = {
+                                    viewModel.updateWatermarkDesign(
+                                        watermarkDesign.copy(repeatGrid = rg.copy(text = it))
+                                    )
+                                },
+                                label = { Text("Grid Text") },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = StudioPrimary,
+                                    unfocusedBorderColor = StudioBorder,
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color(0xFFF8FAFC)
+                                ),
+                                shape = RoundedCornerShape(14.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            )
 
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text("Grid Angle: ${rg.angleDeg.toInt()}°", style = MaterialTheme.typography.bodySmall)
-                        Slider(
-                            value = rg.angleDeg,
-                            onValueChange = {
-                                viewModel.updateWatermarkDesign(
-                                    watermarkDesign.copy(repeatGrid = rg.copy(angleDeg = it))
-                                )
-                            },
-                            valueRange = -60f..60f,
-                            colors = SliderDefaults.colors(thumbColor = StudioSecondary, activeTrackColor = StudioSecondary)
-                        )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text("Grid Angle: ${rg.angleDeg.toInt()}°", fontSize = 11.sp, color = StudioTextSecondary)
+                            Slider(
+                                value = rg.angleDeg,
+                                onValueChange = {
+                                    viewModel.updateWatermarkDesign(
+                                        watermarkDesign.copy(repeatGrid = rg.copy(angleDeg = it))
+                                    )
+                                },
+                                valueRange = -60f..60f,
+                                colors = SliderDefaults.colors(thumbColor = StudioPrimary, activeTrackColor = StudioPrimary, inactiveTrackColor = Color(0xFFE2E8F0))
+                            )
 
-                        Text("Grid Opacity: ${(rg.opacity * 100).toInt()}%", style = MaterialTheme.typography.bodySmall)
-                        Slider(
-                            value = rg.opacity,
-                            onValueChange = {
-                                viewModel.updateWatermarkDesign(
-                                    watermarkDesign.copy(repeatGrid = rg.copy(opacity = it))
-                                )
-                            },
-                            valueRange = 0.05f..0.7f,
-                            colors = SliderDefaults.colors(thumbColor = StudioPrimary, activeTrackColor = StudioPrimary)
-                        )
+                            Text("Grid Opacity: ${(rg.opacity * 100).toInt()}%", fontSize = 11.sp, color = StudioTextSecondary)
+                            Slider(
+                                value = rg.opacity,
+                                onValueChange = {
+                                    viewModel.updateWatermarkDesign(
+                                        watermarkDesign.copy(repeatGrid = rg.copy(opacity = it))
+                                    )
+                                },
+                                valueRange = 0.05f..0.7f,
+                                colors = SliderDefaults.colors(thumbColor = Color(0xFF38BDF8), activeTrackColor = Color(0xFF38BDF8), inactiveTrackColor = Color(0xFFE2E8F0))
+                            )
+                        }
                     }
                 }
             }
@@ -596,53 +618,45 @@ fun CreateWatermarkScreen(
 
         // TAB 3: Animations
         if (activeTab == 3) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = StudioCard),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Watermark Motion & Animation", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.height(10.dp))
+            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                GlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 24.dp
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("Motion Presets", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = StudioTextPrimary)
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    val animations = AnimationType.values()
-                    for (anim in animations) {
-                        val isSelected = watermarkDesign.animation == anim
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) StudioPrimary.copy(alpha = 0.2f) else StudioElevated
-                            ),
-                            shape = RoundedCornerShape(10.dp),
-                            border = androidx.compose.foundation.BorderStroke(
-                                1.dp,
-                                if (isSelected) StudioPrimary else Color.Transparent
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clickable {
-                                    viewModel.updateWatermarkDesign(watermarkDesign.copy(animation = anim))
-                                }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(14.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                        val animations = AnimationType.values()
+                        for (anim in animations) {
+                            val isSelected = watermarkDesign.animation == anim
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(if (isSelected) Color(0xFFE0F2FE) else Color(0xFFF1F5F9))
+                                    .border(1.dp, if (isSelected) StudioPrimary else Color(0xFFE2E8F0), RoundedCornerShape(14.dp))
+                                    .clickable {
+                                        viewModel.updateWatermarkDesign(watermarkDesign.copy(animation = anim))
+                                    }
+                                    .padding(14.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Animation,
-                                    contentDescription = null,
-                                    tint = if (isSelected) StudioPrimary else StudioTextSecondary,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Text(
-                                    text = anim.title,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (isSelected) StudioPrimary else Color.White
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Default.Animation,
+                                        contentDescription = null,
+                                        tint = if (isSelected) StudioPrimary else Color(0xFF64748B),
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Text(
+                                        text = anim.title,
+                                        fontSize = 12.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (isSelected) StudioPrimary else StudioTextPrimary
+                                    )
+                                }
                             }
                         }
                     }
@@ -650,22 +664,21 @@ fun CreateWatermarkScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        // Render & Export Button
-        Button(
-            onClick = { onNavigateToExport() },
-            colors = ButtonDefaults.buttonColors(containerColor = StudioSecondary),
-            shape = RoundedCornerShape(14.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .height(50.dp)
-                .testTag("apply_watermark_export_btn")
-        ) {
-            Text("Apply Watermark & Export Video", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = Color.Black)
+        // Floating Bottom Primary Action Pill Button
+        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+            NavyPillButton(
+                text = "Apply Watermark & Export Final MP4",
+                onClick = { onNavigateToExport() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .testTag("apply_watermark_export_btn"),
+                leadingIcon = {
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = Color(0xFF38BDF8), modifier = Modifier.size(18.dp))
+                }
+            )
         }
     }
 }

@@ -14,19 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -52,9 +48,11 @@ import androidx.compose.ui.unit.sp
 import com.example.domain.model.ExportResolution
 import com.example.feature.ExportState
 import com.example.feature.StudioViewModel
+import com.example.feature.components.GlassCard
+import com.example.feature.components.GlassPillButton
+import com.example.feature.components.LuminousStatusPill
+import com.example.feature.components.NeonActionButton
 import com.example.ui.theme.StudioBorder
-import com.example.ui.theme.StudioCard
-import com.example.ui.theme.StudioElevated
 import com.example.ui.theme.StudioError
 import com.example.ui.theme.StudioPrimary
 import com.example.ui.theme.StudioSecondary
@@ -81,12 +79,13 @@ fun ExportQueueScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
-            .padding(bottom = 80.dp)
+            .padding(bottom = 85.dp)
     ) {
         Text(
             text = "Render & Export Pipeline",
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = StudioTextPrimary
         )
         Text(
             text = "Hardware-accelerated H.264 MediaCodec video encoder",
@@ -99,15 +98,14 @@ fun ExportQueueScreen(
         // Live Export Progress Card
         when (val state = exportState) {
             is ExportState.InProgress -> {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = StudioElevated),
-                    shape = RoundedCornerShape(16.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, StudioPrimary),
+                GlassCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag("export_progress_card")
+                        .testTag("export_progress_card"),
+                    cornerRadius = 22.dp,
+                    borderGlow = true
                 ) {
-                    Column(modifier = Modifier.padding(18.dp)) {
+                    Column(modifier = Modifier.padding(20.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -118,13 +116,9 @@ fun ExportQueueScreen(
                                 fontWeight = FontWeight.Bold,
                                 color = StudioPrimary
                             )
-                            Text(
-                                text = "${(state.progress * 100).toInt()}%",
-                                fontWeight = FontWeight.Bold,
-                                color = StudioPrimary
-                            )
+                            LuminousStatusPill(text = "${(state.progress * 100).toInt()}%", color = StudioPrimary)
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                         LinearProgressIndicator(
                             progress = { state.progress },
                             modifier = Modifier
@@ -132,7 +126,7 @@ fun ExportQueueScreen(
                                 .height(8.dp)
                                 .clip(RoundedCornerShape(4.dp)),
                             color = StudioPrimary,
-                            trackColor = StudioCard
+                            trackColor = Color(0xFFE2E8F0)
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
@@ -141,64 +135,55 @@ fun ExportQueueScreen(
                             color = StudioTextSecondary
                         )
                         Spacer(modifier = Modifier.height(12.dp))
-                        OutlinedButton(
+                        GlassPillButton(
+                            text = "Cancel Export",
                             onClick = { viewModel.cancelExport() },
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = StudioError),
                             modifier = Modifier.align(Alignment.End)
-                        ) {
-                            Text("Cancel", fontSize = 11.sp)
-                        }
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
             is ExportState.Success -> {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = StudioElevated),
-                    shape = RoundedCornerShape(16.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, StudioSuccess),
-                    modifier = Modifier.fillMaxWidth()
+                GlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 22.dp,
+                    borderGlow = true
                 ) {
-                    Column(modifier = Modifier.padding(18.dp)) {
+                    Column(modifier = Modifier.padding(20.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.CheckCircle, contentDescription = null, tint = StudioSuccess)
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Export Completed Successfully!", fontWeight = FontWeight.Bold, color = StudioSuccess)
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("• Output File: ${state.file.name}", fontSize = 12.sp)
-                        Text("• File Size: %.1f MB".format(state.bytes / (1024f * 1024f)), fontSize = 12.sp)
-                        Text("• Processed: ${state.frames} frames", fontSize = 12.sp)
-                        Text("• Location: ${state.file.absolutePath}", fontSize = 10.sp, color = StudioTextSecondary)
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Button(
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text("• Output: ${state.file.name}", fontSize = 12.sp, color = StudioTextPrimary)
+                        Text("• Size: %.1f MB".format(state.bytes / (1024f * 1024f)), fontSize = 12.sp, color = StudioTextPrimary)
+                        Text("• Processed: ${state.frames} frames", fontSize = 12.sp, color = StudioTextPrimary)
+                        Spacer(modifier = Modifier.height(14.dp))
+                        NeonActionButton(
+                            text = "Done",
                             onClick = { viewModel.resetExportState() },
-                            colors = ButtonDefaults.buttonColors(containerColor = StudioSuccess)
-                        ) {
-                            Text("Done", color = Color.Black, fontWeight = FontWeight.Bold)
-                        }
+                            modifier = Modifier.height(42.dp)
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
             is ExportState.Failed -> {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = StudioElevated),
-                    shape = RoundedCornerShape(16.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, StudioError),
-                    modifier = Modifier.fillMaxWidth()
+                GlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 22.dp
                 ) {
-                    Column(modifier = Modifier.padding(18.dp)) {
+                    Column(modifier = Modifier.padding(20.dp)) {
                         Text("Export Encountered an Error", fontWeight = FontWeight.Bold, color = StudioError)
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(state.error, fontSize = 12.sp, color = StudioTextSecondary)
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Button(
-                            onClick = { viewModel.resetExportState() },
-                            colors = ButtonDefaults.buttonColors(containerColor = StudioError)
-                        ) {
-                            Text("Dismiss", color = Color.White)
-                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        GlassPillButton(
+                            text = "Dismiss",
+                            onClick = { viewModel.resetExportState() }
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -207,106 +192,60 @@ fun ExportQueueScreen(
         }
 
         // Export Configuration Card
-        Card(
-            colors = CardDefaults.cardColors(containerColor = StudioCard),
-            shape = RoundedCornerShape(18.dp),
-            modifier = Modifier.fillMaxWidth()
+        GlassCard(
+            modifier = Modifier.fillMaxWidth(),
+            cornerRadius = 24.dp
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Export Profile Settings", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(12.dp))
+            Column(modifier = Modifier.padding(20.dp)) {
+                Text("Export Profile Settings", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = StudioTextPrimary)
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // Resolution
-                Text("Output Resolution", style = MaterialTheme.typography.bodySmall)
-                Spacer(modifier = Modifier.height(6.dp))
+                Text("Output Resolution", style = MaterialTheme.typography.bodySmall, color = StudioTextSecondary)
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     for (res in ExportResolution.values()) {
                         val isSel = selectedResolution == res
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (isSel) StudioPrimary.copy(alpha = 0.2f) else StudioElevated
-                            ),
-                            border = androidx.compose.foundation.BorderStroke(
-                                1.dp, if (isSel) StudioPrimary else Color.Transparent
-                            ),
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { selectedResolution = res }
-                        ) {
-                            Box(modifier = Modifier.padding(vertical = 8.dp), contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = res.label,
-                                    fontSize = 11.sp,
-                                    fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (isSel) StudioPrimary else StudioTextSecondary
-                                )
-                            }
-                        }
+                        GlassPillButton(
+                            text = res.label,
+                            onClick = { selectedResolution = res },
+                            isSelected = isSel,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
 
                 // FPS
-                Text("Framerate: $selectedFps FPS", style = MaterialTheme.typography.bodySmall)
-                Spacer(modifier = Modifier.height(6.dp))
+                Text("Framerate: $selectedFps FPS", style = MaterialTheme.typography.bodySmall, color = StudioTextSecondary)
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     for (fps in listOf(24, 30, 60)) {
                         val isSel = selectedFps == fps
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (isSel) StudioSecondary.copy(alpha = 0.2f) else StudioElevated
-                            ),
-                            border = androidx.compose.foundation.BorderStroke(
-                                1.dp, if (isSel) StudioSecondary else Color.Transparent
-                            ),
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { selectedFps = fps }
-                        ) {
-                            Box(modifier = Modifier.padding(vertical = 8.dp), contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = "$fps FPS",
-                                    fontSize = 11.sp,
-                                    fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (isSel) StudioSecondary else StudioTextSecondary
-                                )
-                            }
-                        }
+                        GlassPillButton(
+                            text = "$fps FPS",
+                            onClick = { selectedFps = fps },
+                            isSelected = isSel,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
 
                 // Bitrate
-                Text("Bitrate: ${selectedBitrate.toInt()} Mbps", style = MaterialTheme.typography.bodySmall)
-                Spacer(modifier = Modifier.height(6.dp))
+                Text("Bitrate: ${selectedBitrate.toInt()} Mbps", style = MaterialTheme.typography.bodySmall, color = StudioTextSecondary)
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     for (br in listOf(4.0f, 6.0f, 8.0f, 12.0f)) {
                         val isSel = selectedBitrate == br
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (isSel) StudioPrimary.copy(alpha = 0.2f) else StudioElevated
-                            ),
-                            border = androidx.compose.foundation.BorderStroke(
-                                1.dp, if (isSel) StudioPrimary else Color.Transparent
-                            ),
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { selectedBitrate = br }
-                        ) {
-                            Box(modifier = Modifier.padding(vertical = 8.dp), contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = "${br.toInt()}M",
-                                    fontSize = 11.sp,
-                                    fontWeight = if (isSel) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (isSel) StudioPrimary else StudioTextSecondary
-                                )
-                            }
-                        }
+                        GlassPillButton(
+                            text = "${br.toInt()}M",
+                            onClick = { selectedBitrate = br },
+                            isSelected = isSel,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
 
@@ -319,20 +258,21 @@ fun ExportQueueScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Preserve Audio Track", style = MaterialTheme.typography.bodySmall)
+                        Text("Preserve Audio Track", style = MaterialTheme.typography.bodySmall, color = StudioTextPrimary)
                         Text("Passthrough original audio muxing", fontSize = 10.sp, color = StudioTextSecondary)
                     }
                     Switch(
                         checked = includeAudio,
                         onCheckedChange = { includeAudio = it },
-                        colors = SwitchDefaults.colors(checkedThumbColor = StudioSecondary)
+                        colors = SwitchDefaults.colors(checkedThumbColor = StudioPrimary)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(18.dp))
 
                 // Start Export Button
-                Button(
+                NeonActionButton(
+                    text = if (currentVideo != null) "Start Render & Export MP4" else "Import Video First",
                     onClick = {
                         viewModel.startExport(
                             resolution = selectedResolution,
@@ -342,20 +282,11 @@ fun ExportQueueScreen(
                         )
                     },
                     enabled = currentVideo != null && exportState !is ExportState.InProgress,
-                    colors = ButtonDefaults.buttonColors(containerColor = StudioPrimary),
-                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(50.dp)
                         .testTag("start_render_button")
-                ) {
-                    Text(
-                        text = if (currentVideo != null) "Start Render & Export MP4" else "Import Video First",
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp
-                    )
-                }
+                )
             }
         }
 
@@ -365,41 +296,47 @@ fun ExportQueueScreen(
         Text(
             text = "Completed Exports (${completedExports.size})",
             fontWeight = FontWeight.Bold,
-            fontSize = 14.sp
+            fontSize = 15.sp,
+            color = StudioTextPrimary
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         if (completedExports.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(StudioElevated)
-                    .padding(20.dp),
-                contentAlignment = Alignment.Center
+            GlassCard(
+                modifier = Modifier.fillMaxWidth(),
+                cornerRadius = 20.dp
             ) {
-                Text("No exported files yet. Rendered MP4 files will appear here.", fontSize = 12.sp, color = StudioTextSecondary)
+                Box(modifier = Modifier.padding(20.dp), contentAlignment = Alignment.Center) {
+                    Text("No exported files yet. Rendered MP4 files will appear here.", fontSize = 12.sp, color = StudioTextSecondary)
+                }
             }
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 for (exp in completedExports) {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = StudioElevated),
-                        shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth()
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        cornerRadius = 20.dp
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(14.dp),
+                                .padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                                Icon(Icons.Default.Movie, contentDescription = null, tint = StudioSecondary)
+                                Box(
+                                    modifier = Modifier
+                                        .size(38.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFFE0F2FE)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(Icons.Default.Movie, contentDescription = null, tint = StudioPrimary, modifier = Modifier.size(18.dp))
+                                }
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
-                                    Text(exp.fileName, fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
+                                    Text(exp.fileName, fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1, color = StudioTextPrimary)
                                     Text(
                                         text = "${exp.resolution} • %.1f MB".format(exp.fileSizeBytes / (1024f * 1024f)),
                                         fontSize = 11.sp,

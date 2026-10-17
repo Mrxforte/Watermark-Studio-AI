@@ -1,16 +1,17 @@
 package com.example.ui.theme
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
-private val StudioDarkColorScheme = darkColorScheme(
+private val StudioLightColorScheme = lightColorScheme(
     primary = StudioPrimary,
-    onPrimary = StudioBackground,
+    onPrimary = Color.White,
     primaryContainer = StudioPrimaryContainer,
     onPrimaryContainer = StudioOnPrimaryContainer,
     secondary = StudioSecondary,
-    onSecondary = StudioBackground,
+    onSecondary = Color.White,
     secondaryContainer = StudioSecondaryContainer,
     onSecondaryContainer = StudioOnSecondaryContainer,
     background = StudioBackground,
@@ -30,8 +31,9 @@ fun WatermarkStudioTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colorScheme = StudioDarkColorScheme,
+        colorScheme = StudioLightColorScheme,
         typography = Typography,
         content = content
     )
 }
+

@@ -114,6 +114,38 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     private var exportJob: Job? = null
     private var isExportCancelledFlag = false
 
+    init {
+        val initialBitmap = SampleVideoGenerator.createSampleFrameBitmap(0f)
+        _currentFrameBitmap.value = initialBitmap
+        _currentVideo.value = VideoInfo(
+            uriString = "",
+            displayName = "Cinematic Sample 720p",
+            durationMs = 5000L,
+            width = 1280,
+            height = 720,
+            fps = 30f,
+            bitrate = 4_000_000L,
+            fileSizeBytes = 2_150_000L,
+            mimeType = "video/mp4"
+        )
+        val sampleThumbs = (0 until 8).map { i ->
+            SampleVideoGenerator.createSampleFrameBitmap(i * 0.6f, 120, 68)
+        }
+        _timelineThumbnails.value = sampleThumbs
+
+        val initialRec = MethodSelector.selectOptimalMethod(initialBitmap, _currentMask.value.rect)
+        _methodRecommendation.value = initialRec
+        _selectedMethod.value = initialRec.recommendedMethod
+        triggerPreviewReconstruction()
+
+        viewModelScope.launch {
+            try {
+                val realUri = SampleVideoGenerator.getOrCreateSampleVideo(getApplication())
+                _currentVideo.value = _currentVideo.value?.copy(uriString = realUri.toString())
+            } catch (_: Exception) {}
+        }
+    }
+
     fun importVideo(uri: Uri) {
         viewModelScope.launch {
             val info = VideoMetadataHelper.extractMetadata(getApplication(), uri)
