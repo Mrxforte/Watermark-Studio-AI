@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_name">Watermark Studio AI</string>
+    <string name="nav_home">Studiya</string>
+    <string name="nav_remove">Olib tashlash</string>
+    <string name="nav_create">Yaratish</string>
+    <string name="nav_projects">Loyihalar</string>
+    <string name="nav_exports">Eksport</string>
+    <string name="nav_assistant">AI Yordamchi</string>
+    <string name="nav_settings">Sozlamalar</string>
+
+    <string name="home_title">Watermark Studio AI</string>
+    <string name="home_subtitle">Videolardagi suv belgilarini professional olib tashlash va yaratish</string>
+    <string name="import_video">Video yuklash</string>
+    <string name="load_sample_video">Demo video</string>
+    <string name="remove_watermark_action">Belgini o\'chirish</string>
+    <string name="create_watermark_action">Belgi yaratish</string>
+    <string name="recent_projects">So\'nggi loyihalar</string>
+    <string name="recent_exports">Tayyor eksportlar</string>
+    <string name="system_capabilities">Qurilma va AI holati</string>
+    <string name="no_projects_yet">Loyihalar hali yo\'q. Boshlash uchun «Video yuklash» tugmasini bosing!</string>
+    <string name="no_exports_yet">Eksport qilingan videolar yo\'q.</string>
+
+    <string name="method_telea">Telea inpainting</string>
+    <string name="method_navier_stokes">Navier-Stokes</string>
+    <string name="method_temporal">Vaqtli qayta tiklash</string>
+    <string name="method_blur">Xiralashtirish (Gauss)</string>
+    <string name="method_mosaic">Piksel / Mozaika</string>
+    <string name="method_crop">Aqlli kesish</string>
+    <string name="method_replace">Logo bilan yopish</string>
+
+    <string name="mask_tools">Maska asboblari</string>
+    <string name="mask_rectangle">To\'rtburchak</string>
+    <string name="mask_brush">Mo\'yqalam</string>
+    <string name="mask_lasso">Lasso</string>
+    <string name="mask_clear">Tozalash</string>
+    <string name="mask_undo">Bekor qilish</string>
+    <string name="mask_redo">Qaytarish</string>
+    <string name="mask_dilation">Maskani kengaytirish (Dilation)</string>
+    <string name="mask_feather">Qirralarni yumshatish (Feather)</string>
+    <string name="inpaint_radius">Inpaint radiusi</string>
+
+    <string name="timeline">Vaqt chizig\'i</string>
+    <string name="compare_before_after">Oldin / Keyin (Taqoslash)</string>
+    <string name="export_video">Render va Eksport</string>
+    <string name="exporting">Video ishlanmoqda…</string>
+    <string name="export_success">Video muvaffaqiyatli eksport qilindi!</string>
+    <string name="export_failed">Eksport xatosi</string>
+    <string name="cancel">Bekor qilish</string>
+    <string name="save">Saqlash</string>
+    <string name="delete">O\'chirish</string>
+
+    <string name="text_watermark">Matn qatlami</string>
+    <string name="logo_watermark">Logo qatlami</string>
+    <string name="watermark_text_hint">Belgi matnini kiriting…</string>
+    <string name="opacity">Shaffoflik</string>
+    <string name="font_size">Shrift o\'lchami</string>
+    <string name="rotation">Aylantirish</string>
+    <string name="repeat_grid">Takroriy to\'r naqshi</string>
+    <string name="animation_fade">Sekin paydo bo\'lish</string>
+    <string name="animation_pulse">Pulsatsiya</string>
+    <string name="animation_slide">Siljish</string>
+
+    <string name="assistant_title">Watermark AI Yordamchisi</string>
+    <string name="assistant_desc">Gemini 4-Argon va 3.8-Flash aqlli video maslahatchisi</string>
+    <string name="ask_assistant_hint">Yordamchidan so\'rang yoki kadr tahlilini talab qiling…</string>
+    <string name="analyze_current_frame">Kadrni Gemini 4 Argon bilan tahlil qilish</string>
+    <string name="high_thinking_mode">Chuqur fikrlash rejimi</string>
+
+    <string name="settings_title">Studiya sozlamalari</string>
+    <string name="language">Til</string>
+    <string name="quality_preset">Video sifati</string>
+    <string name="resolution">Ruxsat o\'lchami</string>
+</resources>

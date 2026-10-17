@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_name">Watermark Studio AI</string>
+    <string name="nav_home">Студия</string>
+    <string name="nav_remove">Удалить</string>
+    <string name="nav_create">Создать</string>
+    <string name="nav_projects">Проекты</string>
+    <string name="nav_exports">Экспорт</string>
+    <string name="nav_assistant">ИИ-Помощник</string>
+    <string name="nav_settings">Настройки</string>
+
+    <string name="home_title">Watermark Studio AI</string>
+    <string name="home_subtitle">Профессиональное удаление и создание водяных знаков для видео</string>
+    <string name="import_video">Импорт видео</string>
+    <string name="load_sample_video">Демо-видео</string>
+    <string name="remove_watermark_action">Удалить знак</string>
+    <string name="create_watermark_action">Создать знак</string>
+    <string name="recent_projects">Недавние проекты</string>
+    <string name="recent_exports">Готовые экспорты</string>
+    <string name="system_capabilities">Статус оборудования и ИИ</string>
+    <string name="no_projects_yet">Нет сохраненных проектов. Нажмите «Импорт видео» для начала!</string>
+    <string name="no_exports_yet">Нет экспортированных видео.</string>
+
+    <string name="method_telea">Инпейнтинг Telea</string>
+    <string name="method_navier_stokes">Навье-Стокс</string>
+    <string name="method_temporal">Временная реконструкция</string>
+    <string name="method_blur">Размытие (Гаусс)</string>
+    <string name="method_mosaic">Пикселизация / Мозаика</string>
+    <string name="method_crop">Умная обрезка</string>
+    <string name="method_replace">Перекрытие логотипом</string>
+
+    <string name="mask_tools">Инструменты маски</string>
+    <string name="mask_rectangle">Прямоугольник</string>
+    <string name="mask_brush">Кисть</string>
+    <string name="mask_lasso">Лассо</string>
+    <string name="mask_clear">Очистить</string>
+    <string name="mask_undo">Отмена</string>
+    <string name="mask_redo">Повтор</string>
+    <string name="mask_dilation">Расширение маски (Dilation)</string>
+    <string name="mask_feather">Растушевка (Feathering)</string>
+    <string name="inpaint_radius">Радиус инпейнтинга</string>
+
+    <string name="timeline">Шкала времени</string>
+    <string name="compare_before_after">Сравнить До/После</string>
+    <string name="export_video">Рендеринг и Экспорт</string>
+    <string name="exporting">Обработка видео…</string>
+    <string name="export_success">Видео успешно экспортировано!</string>
+    <string name="export_failed">Ошибка экспорта</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
+    <string name="delete">Удалить</string>
+
+    <string name="text_watermark">Текстовый слой</string>
+    <string name="logo_watermark">Слой логотипа</string>
+    <string name="watermark_text_hint">Введите текст водяного знака…</string>
+    <string name="opacity">Прозрачность</string>
+    <string name="font_size">Размер шрифта</string>
+    <string name="rotation">Поворот</string>
+    <string name="repeat_grid">Диагональная сетка</string>
+    <string name="animation_fade">Плавное затухание</string>
+    <string name="animation_pulse">Пульсация</string>
+    <string name="animation_slide">Скольжение</string>
+
+    <string name="assistant_title">ИИ-Ассистент Watermark</string>
+    <string name="assistant_desc">Gemini 4-Argon и 3.8-Flash консультант по видео и алгоритмам</string>
+    <string name="ask_assistant_hint">Спросите помощника или запросите анализ кадра…</string>
+    <string name="analyze_current_frame">Анализ кадра через Gemini 4 Argon</string>
+    <string name="high_thinking_mode">Режим глубоких рассуждений</string>
+
+    <string name="settings_title">Настройки студии</string>
+    <string name="language">Язык интерфейса</string>
+    <string name="quality_preset">Качество видео</string>
+    <string name="resolution">Разрешение</string>
+</resources>

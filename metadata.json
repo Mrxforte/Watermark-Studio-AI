@@ -1,0 +1,6 @@
+{
+  "name": "Watermark Studio AI",
+  "description": "Professional video watermark remover and creator with OpenCV inpainting, temporal reconstruction, frame tracking, and Gemini AI assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
